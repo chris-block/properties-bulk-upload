@@ -41,10 +41,16 @@ export async function POST(request: Request) {
     }
 
     console.log('Successful response from HubSpot:', result);
-    return NextResponse.json({ numPropertiesCreated: result.results?.length || 0 })
+    if (result.status === 'COMPLETE') {
+      return NextResponse.json({
+        numPropertiesCreated: result.results?.length || 0,
+        numErrors: result.numErrors || 0,
+        errorMessages: result.errors?.map((error: any) => error.message) || []
+      })
+    }
+    return NextResponse.json({ error: 'Unexpected response status from HubSpot' }, { status: 500 })
   } catch (error) {
     console.error('Error uploading to HubSpot:', error)
     return NextResponse.json({ error: 'An unexpected error occurred while uploading properties to HubSpot' }, { status: 500 })
   }
 }
-

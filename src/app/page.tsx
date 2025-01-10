@@ -338,11 +338,17 @@ export default function BulkUpload() {
       }
 
       setSuccessMessage(JSON.stringify(result, null, 2));
+      const successDescription = [
+        `Uploaded ${result.numPropertiesCreated} ${result.numPropertiesCreated === 1 ? 'property' : 'properties'} to HubSpot.`,
+        result.numErrors > 0 && `Failed to upload ${result.numErrors} ${result.numErrors === 1 ? 'property' : 'properties'}.`,
+        result.errorMessages?.length > 0 && `Errors: ${result.errorMessages.join(', ')}`
+      ].filter(Boolean).join('\n');
+
       toast({
-        title: "Success",
-        description: `Successfully uploaded ${result.numPropertiesCreated} properties to HubSpot.`,
+        title: "Successful request",
+        description: successDescription,
       });
-      console.log(`Successfully uploaded ${result.numPropertiesCreated} properties to HubSpot.`);
+      console.log(successDescription);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "An unknown error occurred while uploading to HubSpot.";
       toast({
@@ -681,12 +687,7 @@ export default function BulkUpload() {
           </div>
         </div>
       )}
-      {successMessage && (
-        <div className="mt-4 p-4 bg-green-100 border border-green-400 rounded">
-          <h3 className="text-lg font-semibold mb-2">Success Response:</h3>
-          <pre className="whitespace-pre-wrap overflow-x-auto">{successMessage}</pre>
-        </div>
-      )}
+
     </div>
   )
 }
